@@ -1,91 +1,126 @@
 /*
- * Comment the Code!
- * ===================================
- * 
- * Welcome to your second Git assignment!
- * 
- * Task: Below is a working program with NO comments. Your job is to add comments that explain what the code does and WHY each part exists.
- * This is a real-world skill—you'll often inherit uncommented code from teammates or past projects.
- *  Rules:
-•	Add a file header block comment at the top
-•	Add section headers (like // ===== HARDWARE OBJECTS =====)
-•	Add inline comments explaining non-obvious lines
-•	Add a block comment before each function explaining its purpose
-  * Save this file (Ctrl+S on PC, Cmd+S on Mac)
-  * Commit your changes using VS Code's Source Control panel
-  * 4. Push your changes to GitHub
+=====================================================
+LESSON 2 - Read Code Like a Pro
+=====================================================
+PURPOSE:
+Demonstrates comments, code organization, OLED help
+screens, and button input handling.
 
+BUTTONS:
+A (Left)  → Show "About" screen
+B (Center) → Show "Controls" screen
+C (Right) → Show "Status" screen
 
-The Uncommented Code:
+HARDWARE:
+- Zumo 32U4 with OLED display
+- Buttons A, B, C
+- Yellow LED (visual feedback)
 
-// ============================================
-// YOUR NAME AND DATE GO HERE (uncomment and edit the line below):
-// 
-// Author: Your Name Here
-// Date:   Today's Date Here
-// AI:  Yes / No I used AI to help me with this assignment.
-// ============================================
+AUTHOR: [Your Name]
+DATE: [Today's Date]
+=====================================================
+*/
 
 #include <Zumo32U4.h>
- 
-Zumo32U4ButtonA buttonA;
-Zumo32U4ButtonB buttonB;
-Zumo32U4ButtonC buttonC;
-Zumo32U4OLED display;
- 
-int mode = 0;
- 
-void showMode() {
-    display.clear();
-    display.setLayout21x8();
-    display.gotoXY(0, 0);
-    display.print(F("Mode: "));
-    display.print(mode);
-    
-    display.gotoXY(0, 2);
-    if (mode == 0) {
-        display.print(F("IDLE"));
-    } else if (mode == 1) {
-        display.print(F("READY"));
-    } else if (mode == 2) {
-        display.print(F("RUNNING"));
-    }
-    
-    display.gotoXY(0, 7);
-    display.print(F("A:- B:+ C:Reset"));
+
+// ===== HARDWARE OBJECTS =====
+Zumo32U4ButtonA buttonA;   // Left button
+Zumo32U4ButtonB buttonB;   // Center button
+Zumo32U4ButtonC buttonC;   // Right button
+Zumo32U4OLED display;      // OLED screen
+
+// ===== PROGRAM INFORMATION =====
+const char* PROGRAM_NAME = "Help Demo";
+const char* VERSION = "2.0";
+const char* AUTHOR = "Amy ";
+
+// ===== HELPER FUNCTIONS =====
+
+void showAboutScreen() {
+  display.clear();
+  display.setLayout21x8();
+  display.gotoXY(0, 0); display.print(F("=== ABOUT ==="));
+  display.gotoXY(0, 2); display.print(F("Program:"));
+  display.gotoXY(0, 3); display.print(PROGRAM_NAME);
+  display.gotoXY(0, 5); display.print(F("Version: "));
+  display.print(VERSION);
+  display.gotoXY(0, 7); display.print(F("By: "));
+  display.print(AUTHOR);
 }
- 
+
+void showControlsScreen() {
+  display.clear();
+  display.setLayout21x8();
+  display.gotoXY(0, 0); display.print(F("=== CONTROLS ==="));
+  display.gotoXY(0, 2); display.print(F("A: About info"));
+  display.gotoXY(0, 3); display.print(F("B: This screen"));
+  display.gotoXY(0, 4); display.print(F("C: Status info"));
+  display.gotoXY(0, 6); display.print(F("Press any button"));
+  display.gotoXY(0, 7); display.print(F("to switch screens"));
+}
+
+void showStatusScreen() {
+  display.clear();
+  display.setLayout21x8();
+  display.gotoXY(0, 0); display.print(F("=== STATUS ==="));
+  display.gotoXY(0, 2); display.print(F("Uptime (sec):"));
+  display.gotoXY(0, 3); display.print(millis() / 1000);
+  display.gotoXY(0, 5); display.print(F("Sensors: N/A"));
+  display.gotoXY(0, 6); display.print(F("Battery: N/A"));
+  display.gotoXY(0, 7); display.print(F("(More in L4+)"));
+}
+
+void showWelcomeScreen() {
+  display.clear();
+  display.setLayout21x8();
+  display.gotoXY(0, 0); display.print(F("LESSON 2"));
+  display.gotoXY(0, 1); display.print(F("Read Code Like"));
+  display.gotoXY(0, 2); display.print(F("a Pro!"));
+  display.gotoXY(0, 4); display.print(F("Press A, B, or C"));
+  display.gotoXY(0, 5); display.print(F("for help screens"));
+  display.gotoXY(0, 7); display.print(F("Serial @ 115200"));
+}
+
+void blinkLED() {
+  ledYellow(1);
+  delay(100);
+  ledYellow(0);
+}
+
+// ===== SETUP =====
 void setup() {
-    Serial.begin(115200);
-    Serial.println(F("Mode Selector"));
-    showMode();
+  Serial.begin(115200);
+  delay(500);
+
+  Serial.println(F(""));
+  Serial.println(F("========================="));
+  Serial.println(F("LESSON 2 - Help Screens"));
+  Serial.println(F("========================="));
+  Serial.println(F("Press A, B, or C..."));
+
+  showWelcomeScreen();
 }
- 
+
+// ===== LOOP =====
 void loop() {
-    if (buttonA.getSingleDebouncedPress()) {
-        if (mode > 0) {
-            mode--;
-        }
-        ledYellow(1); delay(50); ledYellow(0);
-        showMode();
-        Serial.print(F("Mode: ")); Serial.println(mode);
-    }
-    
-    if (buttonB.getSingleDebouncedPress()) {
-        if (mode < 2) {
-            mode++;
-        }
-        ledYellow(1); delay(50); ledYellow(0);
-        showMode();
-        Serial.print(F("Mode: ")); Serial.println(mode);
-    }
-    
-    if (buttonC.getSingleDebouncedPress()) {
-        mode = 0;
-        ledYellow(1); delay(50); ledYellow(0);
-        showMode();
-        Serial.println(F("Mode reset to 0"));
-    }
-    
-    delay(10);
+
+  if (buttonA.getSingleDebouncedPress()) {
+    Serial.println(F("[BTN] A pressed -> About"));
+    blinkLED();
+    showAboutScreen();
+  }
+
+  if (buttonB.getSingleDebouncedPress()) {
+    Serial.println(F("[BTN] B pressed -> Controls"));
+    blinkLED();
+    showControlsScreen();
+  }
+
+  if (buttonC.getSingleDebouncedPress()) {
+    Serial.println(F("[BTN] C pressed -> Status"));
+    blinkLED();
+    showStatusScreen();
+  }
+
+  delay(10);
 }
